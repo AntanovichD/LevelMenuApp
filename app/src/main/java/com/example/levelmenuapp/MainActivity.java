@@ -9,20 +9,38 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Главный экран приложения.
+ *
+ * ЛР №2 (вариант 1) — в макете используется только ConstraintLayout.
+ * ЛР №3 — обработчики кнопок уровней, лог, текст в ресурсах.
+ * ЛР №4 — options-меню, динамическое добавление компонентов прямо в корневой
+ *          ConstraintLayout (через ConstraintLayout.LayoutParams), всплывающие
+ *          сообщения (Toast), контекстное меню для смены цвета компонента.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "LevelMenu";
 
     private TextView tvInfo;
-    private LinearLayout workArea;
+    private ConstraintLayout rootLayout;
+
     private int componentCounter = 0;
+    /** ID последнего добавленного компонента (для привязки следующего сверху). */
+    private int lastComponentId = View.NO_ID;
+    /** Список ID всех динамических компонентов — нужен для очистки рабочей области. */
+    private final List<Integer> dynamicComponentIds = new ArrayList<>();
+    /** Конкретный View, над которым было вызвано контекстное меню. */
     private View contextTargetView;
 
     @Override
@@ -31,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tvInfo = findViewById(R.id.tvInfo);
-        workArea = findViewById(R.id.workArea);
+        rootLayout = findViewById(R.id.rootLayout);
     }
 
-    /** Обработчик нажатия на кнопку уровня (ЛР №3). */
+    /** ЛР №3: обработчик нажатия на кнопку уровня. */
     public void onLevelClick(View view) {
         Button button = (Button) view;
         String levelText = button.getText().toString();
@@ -44,13 +62,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Нажата кнопка уровня: " + levelText);
     }
 
-    /** Обработчик нажатия на кнопку «Назад» (ЛР №3). */
+    /** ЛР №3: обработчик нажатия на кнопку «Назад». */
     public void onBackClick(View view) {
         tvInfo.setText(getString(R.string.choose_level));
         Log.d(TAG, "Нажата кнопка 'Назад'");
     }
 
-    // ----- ЛР №4: options-меню -----
+    // ===== ЛР №4: options-меню =====
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.add_component) {
             addNewComponent();
             return true;
@@ -76,28 +93,48 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Динамически добавляет новый компонент в рабочую область. */
+    /**
+     * Динамически создаёт новый TextView-компонент и добавляет его прямо в
+     * корневой ConstraintLayout с программно заданными constraint'ами.
+     * Никакие дополнительные ViewGroup-контейнеры не используются.
+     */
     private void addNewComponent() {
         componentCounter++;
 
         TextView component = new TextView(this);
+        component.setId(View.generateViewId());
         component.setText(getString(R.string.component_name, componentCounter));
         component.setTextSize(16);
         component.setGravity(Gravity.CENTER);
         component.setPadding(24, 24, 24, 24);
         component.setBackgroundColor(ContextCompat.getColor(this, R.color.component_default));
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(
+                0, // 0dp ширина — растягивается между start и end constraint
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.topMargin = 8;
-        params.bottomMargin = 8;
-        component.setLayoutParams(params);
 
-        // Регистрируем компонент для вызова контекстного меню (долгое нажатие)
+        // Привязываем новый компонент:
+        //  • верх — к нижнему краю предыдущего динамического компонента,
+        //    либо к нижнему краю подсказки workAreaHint, если это первый компонент;
+        //  • левый/правый край — к границам родителя.
+        int topAnchorId = (lastComponentId == View.NO_ID)
+                ? R.id.workAreaHint
+                : lastComponentId;
+        lp.topToBottom = topAnchorId;
+        lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+        lp.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+        lp.leftMargin = 32;
+        lp.rightMargin = 32;
+        lp.topMargin = 12;
+        component.setLayoutParams(lp);
+
+        // ЛР №4: регистрируем компонент для вызова контекстного меню (долгое нажатие).
         registerForContextMenu(component);
 
-        workArea.addView(component);
+        rootLayout.addView(component);
+
+        lastComponentId = component.getId();
+        dynamicComponentIds.add(component.getId());
 
         Toast.makeText(this,
                 getString(R.string.toast_component_added, componentCounter),
@@ -105,20 +142,23 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Добавлен новый компонент №" + componentCounter);
     }
 
-    /** Удаляет все динамически добавленные компоненты из рабочей области. */
+    /** Удаляет все динамически добавленные компоненты, оставляя статичную разметку. */
     private void clearComponents() {
-        View hint = workArea.findViewById(R.id.workAreaHint);
-        workArea.removeAllViews();
-        if (hint != null) {
-            workArea.addView(hint);
+        for (int id : dynamicComponentIds) {
+            View v = rootLayout.findViewById(id);
+            if (v != null) {
+                rootLayout.removeView(v);
+            }
         }
+        dynamicComponentIds.clear();
+        lastComponentId = View.NO_ID;
         componentCounter = 0;
 
         Toast.makeText(this, R.string.toast_work_area_cleared, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Рабочая область очищена");
     }
 
-    // ----- ЛР №4: контекстное меню для динамических компонентов -----
+    // ===== ЛР №4: контекстное меню для динамических компонентов =====
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
