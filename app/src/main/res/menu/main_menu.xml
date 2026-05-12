@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/add_component"
-        android:title="Добавить компонент"/>
+        android:title="@string/menu_add_component"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/clear_components"
-        android:title="Очистить"/>
+        android:title="@string/menu_clear_components"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/exit_app"
-        android:title="Выход"/>
+        android:title="@string/menu_exit"
+        app:showAsAction="never"/>
 </menu>
