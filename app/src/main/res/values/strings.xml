@@ -1,6 +1,62 @@
 <resources>
-    <string name="app_name">LevelMenuApp</string>
-    <string name="choose_level">Выберите уровень</string>
-    <string name="level_pressed">Нажата кнопка: %1$d</string>
-    <string name="back_pressed">Возврат к выбору уровня</string>
+    <string name="app_name">Калькулятор</string>
+
+    <!-- Start screen -->
+    <string name="welcome_title">Калькулятор</string>
+    <string name="welcome_subtitle">Выберите режим работы</string>
+    <string name="welcome_hint">Используйте кнопки на экране, для выхода из приложения дважды нажмите «Назад»</string>
+    <string name="standard_calc">Стандартный калькулятор</string>
+    <string name="extended_calc">Расширенный калькулятор</string>
+
+    <!-- Calculator titles -->
+    <string name="title_standard">Стандартный</string>
+    <string name="title_extended">Расширенный</string>
+
+    <!-- Navigation menu -->
+    <string name="menu_start">Начало</string>
+    <string name="menu_standard">Стандартный</string>
+    <string name="menu_extended">Расширенный</string>
+    <string name="menu_exit">Выход</string>
+
+    <!-- Exit / errors -->
+    <string name="exit_confirm">Нажмите «Назад» ещё раз для выхода</string>
+    <string name="error_div_zero">Ошибка: деление на ноль</string>
+    <string name="error_invalid">Ошибка: некорректная операция</string>
+    <string name="error_short">Ошибка</string>
+
+    <!-- Display defaults -->
+    <string name="display_default">0</string>
+
+    <!-- Operations (используются как тексты кнопок и как ключи в CalcEngine) -->
+    <string name="op_clear">C</string>
+    <string name="op_backspace">⌫</string>
+    <string name="op_plus">+</string>
+    <string name="op_minus">−</string>
+    <string name="op_multiply">×</string>
+    <string name="op_divide">÷</string>
+    <string name="op_equals">=</string>
+    <string name="op_dot">.</string>
+    <string name="op_sign">±</string>
+    <string name="op_percent">%</string>
+    <string name="op_sqrt">√</string>
+    <string name="op_square">x²</string>
+    <string name="op_reciprocal">1/x</string>
+    <string name="op_pi">π</string>
+
+    <!-- Digits -->
+    <string name="digit_0">0</string>
+    <string name="digit_1">1</string>
+    <string name="digit_2">2</string>
+    <string name="digit_3">3</string>
+    <string name="digit_4">4</string>
+    <string name="digit_5">5</string>
+    <string name="digit_6">6</string>
+    <string name="digit_7">7</string>
+    <string name="digit_8">8</string>
+    <string name="digit_9">9</string>
+
+    <!-- Content descriptions (для accessibility) -->
+    <string name="desc_display">Поле вывода калькулятора</string>
+    <string name="desc_clear">Сбросить все вычисления</string>
+    <string name="desc_backspace">Удалить последний символ</string>
 </resources>

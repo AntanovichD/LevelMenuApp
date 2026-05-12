@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_start"
+        android:title="@string/menu_start"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_standard"
+        android:title="@string/menu_standard"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_extended"
+        android:title="@string/menu_extended"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_exit"
+        android:title="@string/menu_exit"
+        app:showAsAction="never"/>
+</menu>

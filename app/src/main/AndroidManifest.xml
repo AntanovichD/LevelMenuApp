@@ -11,15 +11,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LevelMenuApp">
+
+        <!-- Стартовый экран приложения (ЛР №5) -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".StartActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Стандартный калькулятор (ЛР №5) -->
+        <activity
+            android:name=".StandardCalcActivity"
+            android:exported="false"
+            android:parentActivityName=".StartActivity"/>
+
+        <!-- Расширенный калькулятор (ЛР №5) -->
+        <activity
+            android:name=".ExtendedCalcActivity"
+            android:exported="false"
+            android:parentActivityName=".StartActivity"/>
     </application>
 
 </manifest>
