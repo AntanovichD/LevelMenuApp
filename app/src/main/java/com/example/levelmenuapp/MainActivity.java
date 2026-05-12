@@ -2,6 +2,7 @@ package com.example.levelmenuapp;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -15,6 +16,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,31 @@ public class MainActivity extends AppCompatActivity {
 
         tvInfo = findViewById(R.id.tvInfo);
         rootLayout = findViewById(R.id.rootLayout);
+
+        // Edge-to-edge (targetSdk 35+): при targetSdk = 36 содержимое окна
+        // расползается под статус-бар и встроенный ActionBar. Чтобы порядок
+        // на экране был «ActionBar → tvInfo → кнопки → … → Назад», вручную
+        // добавляем корневому ConstraintLayout отступы под системные панели
+        // и высоту ActionBar (берётся из атрибута темы actionBarSize).
+        final TypedValue tv = new TypedValue();
+        final int actionBarHeight;
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(
+                    tv.data, getResources().getDisplayMetrics());
+        } else {
+            actionBarHeight = 0;
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout, (v, windowInsets) -> {
+            Insets systemBars = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top + actionBarHeight,
+                    systemBars.right,
+                    systemBars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     /** ЛР №3: обработчик нажатия на кнопку уровня. */
