@@ -54,7 +54,11 @@ public abstract class BaseCalcActivity extends AppCompatActivity {
 
         applyInsets();
         if (savedInstanceState != null) {
-            engine.restoreFrom(savedInstanceState.getBundle("engine"));
+            engine.setAccumulator(savedInstanceState.getDouble("acc", 0));
+            engine.setPendingOp(savedInstanceState.getString("op"));
+            engine.setCurrentInputState(savedInstanceState.getString("in", ""));
+            engine.setJustEvaluated(savedInstanceState.getBoolean("je", false));
+            engine.setErrorState(savedInstanceState.getBoolean("err", false));
         }
         updateDisplay();
     }
@@ -85,9 +89,11 @@ public abstract class BaseCalcActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Bundle b = new Bundle();
-        engine.saveTo(b);
-        outState.putBundle("engine", b);
+        outState.putDouble("acc", engine.getAccumulator());
+        outState.putString("op", engine.getPendingOp());
+        outState.putString("in", engine.getCurrentInputState());
+        outState.putBoolean("je", engine.isJustEvaluated());
+        outState.putBoolean("err", engine.isErrorState());
     }
 
     @Override protected void onStart()   { super.onStart();   Log.d(TAG, getClass().getSimpleName() + ".onStart"); }

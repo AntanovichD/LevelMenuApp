@@ -1,24 +1,25 @@
 package com.example.levelmenuapp;
 
-import android.os.Bundle;
-
 import java.util.Locale;
 
 /**
- * Чистая логика калькулятора (без зависимостей от Android UI).
+ * Чистая логика калькулятора (без зависимостей от Android — это делает её
+ * легко тестируемой).
  *
- * Состояние:
- *   accumulator   — накопленное значение (левый операнд для отложенной операции);
- *   pendingOp     — отложенная бинарная операция (null, "+", "−", "×", "÷");
- *   currentInput  — текущая строка ввода пользователя ("", "12", "-3.4", "-");
- *   justEvaluated — флаг «только что показали результат, новая цифра начинает заново»;
- *   errorState    — флаг «была ошибка, следующая цифра / C сбрасывают состояние».
+ * Состояние (минимальное и однозначное):
+ *   accumulator   — накопленное значение (левый операнд для отложенной операции
+ *                   или последний показанный результат);
+ *   pendingOp     — отложенная бинарная операция (null если ни одна не нажата);
+ *   currentInput  — текущая строка ввода пользователя ("" если ввод не начат);
+ *   justEvaluated — true только сразу после нажатия «=» / унарной операции,
+ *                   т.е. accumulator содержит свежий результат и следующая
+ *                   введённая цифра должна начать новое выражение;
+ *   errorState    — true при ошибочной операции (1/0, √отрицательного и т.п.).
  *
- * Поведение соответствует поведению типового «инженерного» калькулятора:
- * нажатие новой операции после ввода второго операнда вычисляет накопленный
- * результат и продолжает вычисление; «=» выводит результат и переводит в режим
- * ожидания новой операции; унарные операции применяются к текущему значению на
- * дисплее. Все строки операций совпадают с текстом кнопок (см. strings.xml).
+ * Поведение — типичный «школьный» калькулятор: операции применяются строго
+ * слева направо, без приоритетов. При нажатии новой бинарной операции с уже
+ * введённым вторым операндом промежуточный результат вычисляется и продолжает
+ * накапливаться.
  */
 public class CalcEngine {
 
@@ -27,10 +28,10 @@ public class CalcEngine {
     public static final String OP_MUL = "\u00D7"; // U+00D7 MULTIPLICATION SIGN
     public static final String OP_DIV = "\u00F7"; // U+00F7 DIVISION SIGN
 
-    public static final String OP_SQRT = "\u221A";       // √
-    public static final String OP_SQUARE = "x\u00B2";    // x²
+    public static final String OP_SQRT       = "\u221A";    // √
+    public static final String OP_SQUARE     = "x\u00B2";   // x²
     public static final String OP_RECIPROCAL = "1/x";
-    public static final String OP_PI = "\u03C0";         // π
+    public static final String OP_PI         = "\u03C0";    // π
 
     private double accumulator = 0;
     private String pendingOp = null;
@@ -40,25 +41,26 @@ public class CalcEngine {
 
     private static final int MAX_DIGITS = 12;
 
-    /** Сохранение состояния (например, при повороте экрана). */
-    public void saveTo(Bundle b) {
-        b.putDouble("accumulator", accumulator);
-        b.putString("pendingOp", pendingOp);
-        b.putString("currentInput", currentInput);
-        b.putBoolean("justEvaluated", justEvaluated);
-        b.putBoolean("errorState", errorState);
-    }
+    // ===== Getters / setters (используются Activity для save/restore) =====
 
-    public void restoreFrom(Bundle b) {
-        if (b == null) return;
-        accumulator = b.getDouble("accumulator", 0);
-        pendingOp = b.getString("pendingOp", null);
-        currentInput = b.getString("currentInput", "");
-        justEvaluated = b.getBoolean("justEvaluated", false);
-        errorState = b.getBoolean("errorState", false);
-    }
+    public double getAccumulator() { return accumulator; }
+    public void setAccumulator(double v) { accumulator = v; }
 
-    /** Сбрасывает всё. */
+    public String getPendingOp() { return pendingOp; }
+    public void setPendingOp(String v) { pendingOp = v; }
+
+    public String getCurrentInputState() { return currentInput; }
+    public void setCurrentInputState(String v) { currentInput = (v == null) ? "" : v; }
+
+    public boolean isJustEvaluated() { return justEvaluated; }
+    public void setJustEvaluated(boolean v) { justEvaluated = v; }
+
+    public boolean isErrorState() { return errorState; }
+    public void setErrorState(boolean v) { errorState = v; }
+
+    // ===== Базовые операции =====
+
+    /** Сбрасывает всё состояние. */
     public void clearAll() {
         accumulator = 0;
         pendingOp = null;
@@ -70,21 +72,15 @@ public class CalcEngine {
     /** Что показывать на дисплее. */
     public String getDisplay() {
         if (errorState) return "Ошибка";
-        if (currentInput.isEmpty() || justEvaluated) {
-            return formatNumber(accumulator);
-        }
         if (currentInput.equals("-")) return "-0";
-        return currentInput;
-    }
-
-    public boolean isErrorState() {
-        return errorState;
+        if (!currentInput.isEmpty()) return currentInput;
+        return formatNumber(accumulator);
     }
 
     public void inputDigit(char d) {
         if (errorState) clearAll();
         if (justEvaluated) {
-            // Новый ввод после показа результата начинает выражение заново.
+            // После «=» / унарной операции новая цифра начинает выражение заново.
             accumulator = 0;
             pendingOp = null;
             currentInput = "";
@@ -93,6 +89,7 @@ public class CalcEngine {
         String stripped = currentInput.startsWith("-") ? currentInput.substring(1) : currentInput;
         int digits = stripped.replace(".", "").length();
         if (digits >= MAX_DIGITS) return;
+
         if (currentInput.isEmpty() || currentInput.equals("-")) {
             currentInput = currentInput + d;
         } else if (currentInput.equals("0")) {
@@ -128,6 +125,8 @@ public class CalcEngine {
         }
         if (currentInput.isEmpty()) {
             currentInput = "-";
+        } else if (currentInput.equals("-")) {
+            currentInput = "";
         } else if (currentInput.startsWith("-")) {
             currentInput = currentInput.substring(1);
         } else {
@@ -135,15 +134,15 @@ public class CalcEngine {
         }
     }
 
-    /** Удаляет последний символ. Реализует требование ЛР №5 о «стирании некорректного ввода». */
+    /** Удаляет последний символ — реализует требование ЛР №5 о «стирании некорректного ввода». */
     public void backspace() {
         if (errorState) {
             clearAll();
             return;
         }
         if (justEvaluated) {
-            // После показа результата ⌫ просто сбрасывает «только что вычислено»,
-            // а текущий ввод остаётся пустым — следующая цифра начнёт заново.
+            // После «=» backspace просто снимает флаг — следующее нажатие цифры
+            // продолжит работу с тем же accumulator.
             justEvaluated = false;
             return;
         }
@@ -153,12 +152,15 @@ public class CalcEngine {
     }
 
     /**
-     * Применяет бинарную операцию (+ − × ÷). Если уже была отложенная операция —
-     * сначала вычисляет промежуточный результат. Возвращает false при ошибке.
+     * Применяет бинарную операцию (+ − × ÷). Если уже была отложенная операция
+     * и введён второй операнд — сначала вычисляет промежуточный результат.
+     * Возвращает false при ошибке (деление на 0 в накапливаемой цепочке).
      */
     public boolean applyOp(String op) {
         if (errorState) return false;
+
         if (!currentInput.isEmpty() && !currentInput.equals("-")) {
+            // Завершаем ввод текущего операнда и применяем отложенную операцию (если была).
             double rhs = parseInput();
             if (pendingOp != null) {
                 try {
@@ -171,23 +173,24 @@ public class CalcEngine {
                 accumulator = rhs;
             }
             currentInput = "";
-            justEvaluated = true;
-        } else if (justEvaluated) {
-            // Продолжаем работать с показанным результатом.
-        } else if (pendingOp == null && !justEvaluated) {
-            // Пользователь нажал операцию без ввода — берём 0.
-            accumulator = 0;
-            justEvaluated = true;
         }
+        // Если currentInput пуст:
+        //   - есть отложенная операция → пользователь просто меняет её на новую
+        //     (заменяем pendingOp, accumulator не трогаем);
+        //   - нет отложенной (например, сразу после старта) → берём accumulator
+        //     как левый операнд (это 0 по умолчанию или последний результат).
+
         pendingOp = op;
+        justEvaluated = false;
         return true;
     }
 
-    /** Выполняет «=». Возвращает false при ошибке (например, деление на 0). */
+    /** Выполняет «=». Возвращает false при ошибке. */
     public boolean evaluate() {
         if (errorState) return false;
         if (pendingOp == null) {
-            // Нет отложенной операции — если есть текущий ввод, просто переносим в accumulator.
+            // Нет отложенной операции — если есть введённый операнд, переносим
+            // его в accumulator, иначе оставляем как есть.
             if (!currentInput.isEmpty() && !currentInput.equals("-")) {
                 accumulator = parseInput();
                 currentInput = "";
@@ -214,7 +217,7 @@ public class CalcEngine {
         return true;
     }
 
-    /** Применяет процент: преобразует текущий ввод/значение в значение/100. */
+    /** Процент: преобразует текущее значение на дисплее в значение/100. */
     public boolean applyPercent() {
         if (errorState) return false;
         double v;
@@ -224,14 +227,21 @@ public class CalcEngine {
         } else {
             v = accumulator;
         }
-        // Поведение «классического» калькулятора:
-        //   если есть отложенный +/− → процент относительно accumulator;
-        //   иначе — просто v/100.
         if (pendingOp != null && (pendingOp.equals(OP_ADD) || pendingOp.equals(OP_SUB))) {
-            accumulator = accumulator + accumulator * (v / 100.0) * (pendingOp.equals(OP_SUB) ? -1 : 1);
+            // Классическое поведение «a + b%» = a + a*(b/100)
+            double delta = accumulator * (v / 100.0);
+            if (pendingOp.equals(OP_SUB)) delta = -delta;
+            accumulator = accumulator + delta;
             pendingOp = null;
-        } else if (pendingOp != null) {
-            accumulator = v / 100.0;
+        } else if (pendingOp != null && (pendingOp.equals(OP_MUL) || pendingOp.equals(OP_DIV))) {
+            // «a × b%» = a × (b/100)
+            try {
+                accumulator = compute(accumulator, pendingOp, v / 100.0);
+            } catch (ArithmeticException e) {
+                errorState = true;
+                return false;
+            }
+            pendingOp = null;
         } else {
             accumulator = v / 100.0;
         }
@@ -302,20 +312,18 @@ public class CalcEngine {
     }
 
     /** Форматирование числа для дисплея: целые без точки, дробные — без хвостовых нулей. */
-    private String formatNumber(double v) {
+    String formatNumber(double v) {
         if (Double.isNaN(v) || Double.isInfinite(v)) {
             errorState = true;
             return "Ошибка";
         }
         if (Math.abs(v) >= 1e12) {
-            // Очень большие — экспоненциальная запись
             return String.format(Locale.US, "%.6e", v);
         }
         if (v == Math.floor(v) && !Double.isInfinite(v)) {
             return String.format(Locale.US, "%.0f", v);
         }
         String s = String.format(Locale.US, "%.10f", v);
-        // Удаляем хвостовые нули и лишнюю точку.
         if (s.contains(".")) {
             s = s.replaceAll("0+$", "");
             if (s.endsWith(".")) s = s.substring(0, s.length() - 1);
