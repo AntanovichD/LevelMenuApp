@@ -20,6 +20,10 @@
 
     <!-- Exit / errors -->
     <string name="exit_confirm">Нажмите «Назад» ещё раз для выхода</string>
+    <string name="exit_dialog_title">Выход из приложения</string>
+    <string name="exit_dialog_message">Вы точно хотите выйти?</string>
+    <string name="exit_dialog_yes">Да</string>
+    <string name="exit_dialog_no">Отмена</string>
     <string name="error_div_zero">Ошибка: деление на ноль</string>
     <string name="error_invalid">Ошибка: некорректная операция</string>
     <string name="error_short">Ошибка</string>

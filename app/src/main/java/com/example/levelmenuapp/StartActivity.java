@@ -105,9 +105,9 @@ public class StartActivity extends AppCompatActivity {
             openCalc(ExtendedCalcActivity.class);
             return true;
         } else if (id == R.id.menu_exit) {
-            // На стартовом экране пункт «Выход» — обычное завершение (без подтверждения),
-            // т.к. пользователь явно выбрал этот пункт.
-            finishAffinity();
+            // ЛР №6: при нажатии «Выход» показываем диалог подтверждения
+            // «Вы точно хотите выйти?» — защита от случайного закрытия.
+            SmartExitController.showExitConfirmDialog(this);
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -230,8 +230,9 @@ public abstract class BaseCalcActivity extends AppCompatActivity {
             replaceWith(ExtendedCalcActivity.class);
             return true;
         } else if (id == R.id.menu_exit) {
-            // Здесь — обычное закрытие без подтверждения (умный выход на StartActivity).
-            finishAffinity();
+            // ЛР №6: при нажатии «Выход» показываем диалог подтверждения
+            // «Вы точно хотите выйти?» — защита от случайного закрытия.
+            SmartExitController.showExitConfirmDialog(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
