@@ -3,4 +3,45 @@
     <string name="choose_level">Выберите уровень</string>
     <string name="level_pressed">Нажата кнопка: %1$d</string>
     <string name="back_pressed">Возврат к выбору уровня</string>
+    <string name="back">Назад</string>
+
+    <!-- Номера кнопок уровней (ЛР №3: все строки в ресурсах) -->
+    <string name="level_1">1</string>
+    <string name="level_2">2</string>
+    <string name="level_3">3</string>
+    <string name="level_4">4</string>
+    <string name="level_5">5</string>
+    <string name="level_6">6</string>
+    <string name="level_7">7</string>
+    <string name="level_8">8</string>
+    <string name="level_9">9</string>
+    <string name="level_10">10</string>
+    <string name="level_11">11</string>
+    <string name="level_12">12</string>
+    <string name="level_13">13</string>
+    <string name="level_14">14</string>
+    <string name="level_15">15</string>
+    <string name="level_16">16</string>
+    <string name="level_17">17</string>
+    <string name="level_18">18</string>
+    <string name="level_19">19</string>
+    <string name="level_20">20</string>
+
+    <!-- Меню (ЛР №4) -->
+    <string name="menu_add_component">Добавить компонент</string>
+    <string name="menu_clear_components">Очистить</string>
+    <string name="menu_exit">Выход</string>
+
+    <!-- Подсказки и сообщения для ЛР №4 -->
+    <string name="work_area_hint">Долгое нажатие на компонент — изменить цвет</string>
+    <string name="component_name">Компонент %1$d</string>
+    <string name="toast_component_added">Добавлен компонент №%1$d</string>
+    <string name="toast_work_area_cleared">Рабочая область очищена</string>
+
+    <!-- Контекстное меню (ЛР №4) -->
+    <string name="context_menu_title">Изменить цвет</string>
+    <string name="color_red">Красный</string>
+    <string name="color_green">Зелёный</string>
+    <string name="color_blue">Синий</string>
+    <string name="color_default">По умолчанию</string>
 </resources>

@@ -6,4 +6,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Цвета для контекстного меню (ЛР №4) -->
+    <color name="component_red">#FFEF5350</color>
+    <color name="component_green">#FF66BB6A</color>
+    <color name="component_blue">#FF42A5F5</color>
+    <color name="component_default">#FFE0E0E0</color>
 </resources>
