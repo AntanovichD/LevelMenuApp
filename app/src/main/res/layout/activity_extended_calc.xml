@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ЛР №5/№6 — расширенный калькулятор: 4 базовых + ряд унарных операций
+    (x², √, 1/x, π, %, ±). 6 строк × 4 столбца. Контейнер: только ConstraintLayout.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/calc_bg"
+    android:fitsSystemWindows="true">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/displayGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25"/>
+
+    <TextView
+        android:id="@+id/display"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
+        android:background="@color/calc_display_bg"
+        android:contentDescription="@string/desc_display"
+        android:gravity="end|center_vertical"
+        android:padding="20dp"
+        android:singleLine="true"
+        android:textColor="@color/calc_display_text"
+        android:textSize="44sp"
+        android:textStyle="bold"
+        android:text="@string/display_default"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/displayGuide"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 1: C  ⌫  x²  √ -->
+    <Button android:id="@+id/btn_clear" style="@style/CalcButton.Clear"
+        android:contentDescription="@string/desc_clear" android:onClick="onClearClick" android:text="@string/op_clear"
+        app:layout_constraintTop_toBottomOf="@id/displayGuide" app:layout_constraintBottom_toTopOf="@id/btn_percent"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_back"
+        app:layout_constraintHorizontal_chainStyle="spread" app:layout_constraintVertical_chainStyle="spread"/>
+    <Button android:id="@+id/btn_back" style="@style/CalcButton.Clear"
+        android:contentDescription="@string/desc_backspace" android:onClick="onBackspaceClick" android:text="@string/op_backspace"
+        app:layout_constraintTop_toTopOf="@id/btn_clear" app:layout_constraintBottom_toBottomOf="@id/btn_clear"
+        app:layout_constraintStart_toEndOf="@id/btn_clear" app:layout_constraintEnd_toStartOf="@id/btn_square"/>
+    <Button android:id="@+id/btn_square" style="@style/CalcButton.Op"
+        android:onClick="onUnaryClick" android:text="@string/op_square"
+        app:layout_constraintTop_toTopOf="@id/btn_clear" app:layout_constraintBottom_toBottomOf="@id/btn_clear"
+        app:layout_constraintStart_toEndOf="@id/btn_back" app:layout_constraintEnd_toStartOf="@id/btn_sqrt"/>
+    <Button android:id="@+id/btn_sqrt" style="@style/CalcButton.Op"
+        android:onClick="onUnaryClick" android:text="@string/op_sqrt"
+        app:layout_constraintTop_toTopOf="@id/btn_clear" app:layout_constraintBottom_toBottomOf="@id/btn_clear"
+        app:layout_constraintStart_toEndOf="@id/btn_square" app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 2: %  1/x  π  ÷ -->
+    <Button android:id="@+id/btn_percent" style="@style/CalcButton.Op"
+        android:onClick="onPercentClick" android:text="@string/op_percent"
+        app:layout_constraintTop_toBottomOf="@id/btn_clear" app:layout_constraintBottom_toTopOf="@id/btn_7"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_recip"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+    <Button android:id="@+id/btn_recip" style="@style/CalcButton.Op"
+        android:onClick="onUnaryClick" android:text="@string/op_reciprocal"
+        app:layout_constraintTop_toTopOf="@id/btn_percent" app:layout_constraintBottom_toBottomOf="@id/btn_percent"
+        app:layout_constraintStart_toEndOf="@id/btn_percent" app:layout_constraintEnd_toStartOf="@id/btn_pi"/>
+    <Button android:id="@+id/btn_pi" style="@style/CalcButton.Op"
+        android:onClick="onUnaryClick" android:text="@string/op_pi"
+        app:layout_constraintTop_toTopOf="@id/btn_percent" app:layout_constraintBottom_toBottomOf="@id/btn_percent"
+        app:layout_constraintStart_toEndOf="@id/btn_recip" app:layout_constraintEnd_toStartOf="@id/btn_div"/>
+    <Button android:id="@+id/btn_div" style="@style/CalcButton.Op"
+        android:onClick="onOpClick" android:text="@string/op_divide"
+        app:layout_constraintTop_toTopOf="@id/btn_percent" app:layout_constraintBottom_toBottomOf="@id/btn_percent"
+        app:layout_constraintStart_toEndOf="@id/btn_pi" app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 3: 7 8 9 × -->
+    <Button android:id="@+id/btn_7" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_7"
+        app:layout_constraintTop_toBottomOf="@id/btn_percent" app:layout_constraintBottom_toTopOf="@id/btn_4"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_8"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+    <Button android:id="@+id/btn_8" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_8"
+        app:layout_constraintTop_toTopOf="@id/btn_7" app:layout_constraintBottom_toBottomOf="@id/btn_7"
+        app:layout_constraintStart_toEndOf="@id/btn_7" app:layout_constraintEnd_toStartOf="@id/btn_9"/>
+    <Button android:id="@+id/btn_9" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_9"
+        app:layout_constraintTop_toTopOf="@id/btn_7" app:layout_constraintBottom_toBottomOf="@id/btn_7"
+        app:layout_constraintStart_toEndOf="@id/btn_8" app:layout_constraintEnd_toStartOf="@id/btn_mul"/>
+    <Button android:id="@+id/btn_mul" style="@style/CalcButton.Op"
+        android:onClick="onOpClick" android:text="@string/op_multiply"
+        app:layout_constraintTop_toTopOf="@id/btn_7" app:layout_constraintBottom_toBottomOf="@id/btn_7"
+        app:layout_constraintStart_toEndOf="@id/btn_9" app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 4: 4 5 6 − -->
+    <Button android:id="@+id/btn_4" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_4"
+        app:layout_constraintTop_toBottomOf="@id/btn_7" app:layout_constraintBottom_toTopOf="@id/btn_1"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_5"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+    <Button android:id="@+id/btn_5" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_5"
+        app:layout_constraintTop_toTopOf="@id/btn_4" app:layout_constraintBottom_toBottomOf="@id/btn_4"
+        app:layout_constraintStart_toEndOf="@id/btn_4" app:layout_constraintEnd_toStartOf="@id/btn_6"/>
+    <Button android:id="@+id/btn_6" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_6"
+        app:layout_constraintTop_toTopOf="@id/btn_4" app:layout_constraintBottom_toBottomOf="@id/btn_4"
+        app:layout_constraintStart_toEndOf="@id/btn_5" app:layout_constraintEnd_toStartOf="@id/btn_sub"/>
+    <Button android:id="@+id/btn_sub" style="@style/CalcButton.Op"
+        android:onClick="onOpClick" android:text="@string/op_minus"
+        app:layout_constraintTop_toTopOf="@id/btn_4" app:layout_constraintBottom_toBottomOf="@id/btn_4"
+        app:layout_constraintStart_toEndOf="@id/btn_6" app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 5: 1 2 3 + -->
+    <Button android:id="@+id/btn_1" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_1"
+        app:layout_constraintTop_toBottomOf="@id/btn_4" app:layout_constraintBottom_toTopOf="@id/btn_sign"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_2"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+    <Button android:id="@+id/btn_2" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_2"
+        app:layout_constraintTop_toTopOf="@id/btn_1" app:layout_constraintBottom_toBottomOf="@id/btn_1"
+        app:layout_constraintStart_toEndOf="@id/btn_1" app:layout_constraintEnd_toStartOf="@id/btn_3"/>
+    <Button android:id="@+id/btn_3" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_3"
+        app:layout_constraintTop_toTopOf="@id/btn_1" app:layout_constraintBottom_toBottomOf="@id/btn_1"
+        app:layout_constraintStart_toEndOf="@id/btn_2" app:layout_constraintEnd_toStartOf="@id/btn_add"/>
+    <Button android:id="@+id/btn_add" style="@style/CalcButton.Op"
+        android:onClick="onOpClick" android:text="@string/op_plus"
+        app:layout_constraintTop_toTopOf="@id/btn_1" app:layout_constraintBottom_toBottomOf="@id/btn_1"
+        app:layout_constraintStart_toEndOf="@id/btn_3" app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Row 6: ±  0  .  = -->
+    <Button android:id="@+id/btn_sign" style="@style/CalcButton.Op"
+        android:onClick="onSignClick" android:text="@string/op_sign"
+        app:layout_constraintTop_toBottomOf="@id/btn_1" app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/btn_0"
+        app:layout_constraintHorizontal_chainStyle="spread"/>
+    <Button android:id="@+id/btn_0" style="@style/CalcButton.Digit"
+        android:onClick="onDigitClick" android:text="@string/digit_0"
+        app:layout_constraintTop_toTopOf="@id/btn_sign" app:layout_constraintBottom_toBottomOf="@id/btn_sign"
+        app:layout_constraintStart_toEndOf="@id/btn_sign" app:layout_constraintEnd_toStartOf="@id/btn_dot"/>
+    <Button android:id="@+id/btn_dot" style="@style/CalcButton.Digit"
+        android:onClick="onDotClick" android:text="@string/op_dot"
+        app:layout_constraintTop_toTopOf="@id/btn_sign" app:layout_constraintBottom_toBottomOf="@id/btn_sign"
+        app:layout_constraintStart_toEndOf="@id/btn_0" app:layout_constraintEnd_toStartOf="@id/btn_eq"/>
+    <Button android:id="@+id/btn_eq" style="@style/CalcButton.Equals"
+        android:onClick="onEqualsClick" android:text="@string/op_equals"
+        app:layout_constraintTop_toTopOf="@id/btn_sign" app:layout_constraintBottom_toBottomOf="@id/btn_sign"
+        app:layout_constraintStart_toEndOf="@id/btn_dot" app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

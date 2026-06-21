@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Базовая палитра темы (остаётся от шаблона) -->
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Палитра калькулятора (ЛР №5–6, принципы дизайна) -->
+    <color name="calc_bg">#FFF2F2F7</color>
+    <color name="calc_display_bg">#FFFFFFFF</color>
+    <color name="calc_display_text">#FF1C1C1E</color>
+    <color name="calc_digit_bg">#FFFFFFFF</color>
+    <color name="calc_digit_text">#FF1C1C1E</color>
+    <color name="calc_op_bg">#FFEAE6F6</color>
+    <color name="calc_op_text">#FF6200EE</color>
+    <color name="calc_action_bg">#FF6200EE</color>
+    <color name="calc_action_text">#FFFFFFFF</color>
+    <color name="calc_clear_bg">#FFFFE3E3</color>
+    <color name="calc_clear_text">#FFC62828</color>
 </resources>
